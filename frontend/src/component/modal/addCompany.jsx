@@ -6,8 +6,7 @@ import { ASSIGNMENT_API } from "../../service/apiConstant";
 import toast from "react-hot-toast";
 import ErrorText from "../errorText";
 
-// Modal Component
-export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
+export const AddCompanyModal = ({ isOpen, onClose, fetchCompanyList }) => {
   const [formData, setFormData] = useState({
     companyName: "",
     location: "",
@@ -15,6 +14,7 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
     city: "",
   });
   const logoRef = useRef();
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({
       ...prev,
@@ -64,7 +64,7 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
 
     handleAdd();
   };
-  // handle add new company
+
   async function handleAdd() {
     let request = {
       language: "en",
@@ -76,13 +76,11 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
     };
     try {
       const response = await api.post(ASSIGNMENT_API.addCompany, request);
-      console.log(response?.data?.message);
       if (response?.data?.status) {
         toast.success(response?.data?.message);
-        fetchCompanyList()
-        onClose()
-        setFormData({})
-        
+        fetchCompanyList();
+        onClose();
+        setFormData({});
       } else {
         toast.error(response?.data?.message);
       }
@@ -90,8 +88,7 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
       toast.error(error?.response?.data?.message);
     }
   }
-  if (!isOpen) return null;
-  // handle uplodad image "
+
   async function handleUploadImage(event) {
     const file = event.target.files[0];
 
@@ -108,7 +105,6 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Upload successful:", response.data);
       if (response?.data?.status) {
         setFormData((formData) => ({
           ...formData,
@@ -123,11 +119,14 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
       toast.error(error?.response?.data?.message);
     }
   }
+
+  if (!isOpen) return null;
+
   return (
-    <div className="fixed inset-0 bg-black/30  flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl w-full max-w-lg relative overflow-hidden shadow-2xl">
+    <div className="fixed inset-0 bg-black/30 flex items-center justify-center z-50 p-4 overflow-y-auto">
+      <div className="bg-white rounded-3xl w-full max-w-xs sm:max-w-sm md:max-w-md relative overflow-y-auto max-h-[90vh] shadow-2xl mx-auto my-8">
         {/* Purple decorative background */}
-        <div className="absolute top-0 left-0 w-full h-28">
+        <div className="absolute top-0 left-0 w-full h-0">
           <div
             className="absolute w-22 h-22  rounded-full z-10  "
             style={{
@@ -147,54 +146,53 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
         </div>
 
         {/* Modal Content */}
-        <div className="relative p-8">
+        <div className="relative p-4 sm:p-5">
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-6 right-6 text-gray-500 hover:text-gray-700 z-10"
+            className="absolute top-3 right-3 text-gray-500 hover:text-gray-700 z-10"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
           {/* Title */}
-          <h2 className="text-2xl font-bold text-gray-900 mb-8 mt-2 text-center">
+          <h2 className="text-lg font-bold text-gray-900 mb-4 text-center">
             Add Company
           </h2>
 
           {/* Form */}
-          <div className="space-y-5">
-            <div
-              onClick={() => logoRef.current.click()}
-              style={{
-                border: "1px dashed #a608e9ff",
-                height: 100,
-                width: 100,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                cursor: "pointer",
-              }}
-            >
-              {formData?.companyLogoImage ? (
-                <img src={formData?.companyLogoImage} alt="" />
-              ) : (
-                <>
-                  <input
-                    ref={logoRef}
-                    type="file"
-                    onChange={handleUploadImage}
-                    accept="image/*"
-                    style={{ display: "none" }}
+          <div className="space-y-3">
+            {/* Logo Upload */}
+            <div className="flex flex-col items-center mb-2">
+              <div
+                onClick={() => logoRef.current.click()}
+                className="border border-dashed border-purple-600 h-22 w-20 flex justify-center items-center cursor-pointer rounded-lg overflow-hidden"
+              >
+                {formData?.companyLogoImage ? (
+                  <img
+                    src={formData?.companyLogoImage}
+                    alt="Company Logo"
+                    className="w-full h-full object-cover"
                   />
-                  <p style={{ color: "#a608e9ff" }}>Add Logo</p>
-                </>
-              )}
+                ) : (
+                  <>
+                    <input
+                      ref={logoRef}
+                      type="file"
+                      onChange={handleUploadImage}
+                      accept="image/*"
+                      className="hidden"
+                    />
+                    <p className="text-purple-600 text-xs text-center">Add Logo</p>
+                  </>
+                )}
+              </div>
+              <ErrorText error={formData?.companyLogoErr} />
             </div>
-            <ErrorText error={formData?.companyLogoErr} />
 
             {/* Company Name */}
             <div>
-              <label className="block text-sm text-gray-500 mb-2">
+              <label className="block text-xs text-gray-500 mb-1">
                 Company name
               </label>
               <input
@@ -204,14 +202,14 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
                 onChange={(e) =>
                   handleInputChange("companyName", e.target.value)
                 }
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700 text-sm"
               />
               <ErrorText error={formData?.companyNameErr} />
             </div>
 
             {/* Location */}
             <div>
-              <label className="block text-sm text-gray-500 mb-2">
+              <label className="block text-xs text-gray-500 mb-1">
                 Location
               </label>
               <div className="relative">
@@ -222,16 +220,16 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
                   onChange={(e) =>
                     handleInputChange("location", e.target.value)
                   }
-                  className="w-full px-4 py-3 pr-12 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700"
+                  className="w-full px-3 py-2 pr-8 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700 text-sm"
                 />
-                <MapPin className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <MapPin className="absolute right-2 top-1/2 transform -translate-y-1/2 w-3 h-3 text-gray-400" />
               </div>
               <ErrorText error={formData?.locationErr} />
             </div>
 
             {/* Founded On */}
             <div>
-              <label className="block text-sm text-gray-500 mb-2">
+              <label className="block text-xs text-gray-500 mb-1">
                 Founded on
               </label>
               <div className="relative">
@@ -242,31 +240,32 @@ export const AddCompanyModal = ({ isOpen, onClose,fetchCompanyList }) => {
                   onChange={(e) =>
                     handleInputChange("foundedOn", e.target.value)
                   }
-                  className="w-full px-4 py-3  border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700 text-sm"
                 />
-                {/* <Calendar className="absolute right-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" /> */}
               </div>
               <ErrorText error={formData?.foundedOnErr} />
             </div>
 
             {/* City */}
             <div>
-              <label className="block text-sm text-gray-500 mb-2">City</label>
+              <label className="block text-xs text-gray-500 mb-1">
+                City
+              </label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={(e) => handleInputChange("city", e.target.value)}
-                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700"
+                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-purple-500 focus:border-transparent placeholder-gray-400 text-gray-700 text-sm"
               />
               <ErrorText error={formData?.cityErr} />
             </div>
           </div>
 
           {/* Save Button */}
-          <div className="flex justify-center mt-8">
+          <div className="flex justify-center mt-5 pb-4">
             <button
               onClick={handleSave}
-              className="bg-purple-600 text-white px-12 py-3 rounded-xl hover:bg-purple-700 transition-colors font-medium text-lg"
+              className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm"
             >
               Save
             </button>
