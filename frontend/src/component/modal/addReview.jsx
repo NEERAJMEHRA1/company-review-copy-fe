@@ -4,7 +4,7 @@ import ErrorText from "../errorText";
 import toast from "react-hot-toast";
 import { ASSIGNMENT_API } from "../../service/apiConstant";
 import api from "../../service";
-
+//
 export const AddReviewsModal = ({ isOpen, onClose, id, getCompanyDetail }) => {
   const [formData, setFormData] = useState({
     fullName: "",
